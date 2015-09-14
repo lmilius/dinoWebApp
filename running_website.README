@@ -1,0 +1,24 @@
+sudo python_website2.py
+
+RED FLAG:
+Blue Flag:
+No FTP , might need to make that...
+
+
+
+Finding a better way to do this would be nice...
+
+Each team needs to edit buy.js to properly sent to the correct pay.teamN.isucdc.com server
+
+Who ever wrote this code has no idea what he is doing, he did alot aof repetitive calls that he should of just made into functions. He keeps on making the excuse that he only had 2 weeks to make a webapp and that was not enough time. He might be fired shortly...
+
+The programmer also has tons of sql injection vulnerbailites in the web server and does not even bother to do encrytion with the ajax or server side code. Another flaw I noticed is that the server does not even check is the password is correct, as long as they have the correct username it just lets them in.
+
+I also figured out that to get into mysql, the command is ' mysql -u root -p' and then the password is cdc. You might want to remove his hidden accounts that are not in the specs.
+
+Luckily the programmer made a backup sql file encase if he broke anything (trust me HE DID!!!!) this might be useful if an attacker breaks everything or if you need to reset the store. The command is "mysql -u root -p Website < MYSQL_BACKUP.sql" or something similiar.
+
+If you find any major bugs out of the box email cdc_support@iseage.org for help. Luckily these ISEAGE people know what they are doing!
+
+
+-Charlie
