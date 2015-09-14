@@ -55,3 +55,28 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# Temp Files
+*.*~
+
+.ICEauthority
+.Xauthority
+.bash_history
+.bash_logout
+.bashrc
+.compiz/
+.config/
+.dbus/
+.dmrc
+.gconf/
+.local/
+.macromedia/
+.mozilla/
+.mysql_history
+.profile
+.viminfo
+.xsession-errors
+.xsession-errors.old
+examples.desktop
+
+
