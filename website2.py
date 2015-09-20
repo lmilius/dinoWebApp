@@ -9,82 +9,82 @@ import os
 import MySQLdb as mdb
 import json
 import random
+import logging
+import datetime
 
-def Get_last_Purchase():
+def connectDB():
 	con = mdb.connect('localhost', 'root', 'cdc', 'Website')
 	cur = con.cursor()
-	number = get_number_of_purchases()	
-	print number
+	logging.debug("Conected to database.")
+	return con, cur
+
+def Get_last_Purchase():
+	con, cur = connectDB()
+	number = get_number_of_purchases()
+	logging.debug("Number of purchases: %s", str(number))
 	query = ("SELECT * FROM Purchases where Tracker=%s ")
 	cur.execute(query, int(number) - 1)
 	Last_purchase = cur.fetchall()
-	print Last_purchase
+	logging.debug("Last Purchase: %s", str(Last_purchase))
 	return Last_purchase
 
 def get_number_of_purchases():
-	con = mdb.connect('localhost', 'root', 'cdc', 'Website')
-	cur = con.cursor()
+	con, cur = connectDB()
 	query = ("SELECT Max(Tracker) FROM Purchases")
 	cur.execute(query)
 	number = cur.fetchall()
-	print number[0][0]
-	print '&&&&&&'
-	return number[0][0]	
-	
+	logging.debug("Number of purchases: %s", str(number[0][0]))
+	return number[0][0]
+
 def getPurchaseID(data):
-	con = mdb.connect('localhost', 'root', 'cdc', 'Website')
-	cur = con.cursor()
+	con, cur = connectDB()
 	query = ("SELECT * FROM Products where txid=%s ")
 	cur.execute(query, data)
-	info = 	cur.fetchall()	
-	print info[0][4]
-	print '***********'
+	info = 	cur.fetchall()
+	logging.debug("PurchaseID: %s", str(info[0][4]))
 	return info[0][4]
-	
+
 def GetPurchaseproof(data):
-	con = mdb.connect('localhost', 'root', 'cdc', 'Website')
-	cur = con.cursor()
-	query = ("SELECT * FROM Products where txid=%s")
-	cur.execute("""SELECT Proof_of_purchase FROM Products where txid=%s""", (str(data[0])))
-	proof = 	cur.fetchall()
-	print "-------IN GETPURCHASEPROOF---------"
-	print proof
-	# print infoJson	
+	logging.debug("GetPurchaseproof Data parameter: %s", str(data))
+	con, cur = connectDB()
+	# WHY is this query here when there is an execute line below??
+	#query = ("SELECT * FROM Products where txid=%s")
+	cur.execute("SELECT Proof_of_purchase FROM Products where txid=%s", (str(data[0])))
+	proof =	cur.fetchall()
+	logging.debug("Purchase Proof: %s", str(proof))
 	return proof
 
 def getDinoInfo():
-	con = mdb.connect('localhost', 'root', 'cdc', 'Website')
-	cur = con.cursor()
+	con, cur = connectDB()
 	query = ("SELECT * FROM Info")
 	cur.execute(query)
-	infoJson = 	cur.fetchall()	
-	# print infoJson	
+	infoJson = 	cur.fetchall()
+	logging.debug("DinoInfo: %s", str(infoJson))
 	return json.dumps(infoJson)
 
 def addInfo(data):
 	# print data
+	logging.debug("addInfo Data parameter: %s", str(data))
 	data = data.split("&")
 	Headers = data[0].replace("Headers=", '')
 	Text = data[1].replace("Text=", '')
-	con = mdb.connect('localhost', 'root', 'cdc', 'Website')
-	cur = con.cursor()
+	con, cur = connectDB()
 	cur.execute("""INSERT INTO Info VALUES (%s,%s)""", (Headers, Text))
 	con.commit()
 
 def ProcessPurchase(data):
 	print 'processing data';
 	print data
-	print type(data)	  
+	print type(data)
 	data = data.split("&")
 	print data
-	
+
 	data[0] = data[0].replace('txid=', '')
 	data[1] = data[1].replace('amount=', '')
 	data[2] = data[2].replace('paid=', '')
-	
+
 	print data
-	con = mdb.connect('localhost', 'root', 'cdc', 'Website')
-	cur = con.cursor()
+	con, cur = connectDB()
 	purchaseID = getPurchaseID(data[0]);
 	print purchaseID
 	print purchaseID
@@ -94,47 +94,45 @@ def ProcessPurchase(data):
 	updateTXID(data[0])
 
 def StoreMenu():
-	con = mdb.connect('localhost', 'root', 'cdc', 'Website')
-	cur = con.cursor()
+	con, cur = connectDB()
 	query = ("SELECT * FROM Products")
 	cur.execute(query)
-	infoJson = 	cur.fetchall()	
-	# print infoJson	
+	infoJson = 	cur.fetchall()
+	# print infoJson
 	return json.dumps(infoJson)
 
 def updateTXID(txid):
 	print txid
-	try:   
-	 	con = mdb.connect('localhost', 'root', 'cdc', 'Website')
-		cur = con.cursor()
+	try:
+	 	con, cur = connectDB()
 		query = ("SELECT * FROM Products WHERE txid=%s")
-		cur.execute(query, int(txid))			
+		cur.execute(query, int(txid))
 		check1 = cur.fetchall()
 		con.commit()
 		# print check1
 		# print check1[0][3]
 		# quanity=int(check1[0][3])-1
-		# newtxid=random.randrange(0,100000000)	
+		# newtxid=random.randrange(0,100000000)
 		# cur.execute("""Insert into Products VALUES(%s,%s,%s,%s,%s)""",(check1[0][0],check1[0][1],check1[0][2],quanity,newtxid))
-		# con.commit()	
+		# con.commit()
 		# print check
 	except:
 		print 'product info stayed the same'
-		 	
+
 class StartPageData(Element):
 	loader = XMLFile(FilePath(os.path.join('html', 'login.html')))
 	isLeaf = False
 	allowedMethods = ('GET', 'POST', 'HEAD')
 	def __init__(self, resource):
 		self.resource = resource
-				
+
 class loginPage(resource.Resource):
 	isLeaf = False
 	allowedMethods = ('GET', 'POST', 'HEAD',)
 	def __init__(self):
 		print 'loginPage init'
 		resource.Resource.__init__(self)
-	
+
 class FormPage(resource.Resource):
 	isLeaf = False
 	allowedMethods = ('GET', 'POST', 'HEAD')
@@ -150,12 +148,12 @@ class FormPage(resource.Resource):
 		if request.getHeader('request') == 'receipt':
 			print 'I am returning purchases'
 			print request.args
-		
+
 			last_purchase = Get_last_Purchase();
 			proof = GetPurchaseproof(last_purchase)
-			
+
 			print last_purchase
-			
+
 			# last_purchase.append(proof)
 			print last_purchase
 			return json.dumps(last_purchase)
@@ -171,7 +169,7 @@ class FormPage(resource.Resource):
 		request.finish()
 
 	def getChild(self, name, request):
-			
+
 		allowedMethods = ('GET', 'POST', 'HEAD')
 		if request.method == 'POST':
 			print 'Post is woriking'
@@ -208,12 +206,12 @@ class FormPage(resource.Resource):
 			return static.File(os.path.join('html', 'info.html'))
 	   	elif name == 'receipt' or name == 'receipt.html':
 			return static.File(os.path.join('html', 'receipt.html'))
-		else:	
+		else:
 			return FormPage()
 
-	def render_POST(self, request): 
+	def render_POST(self, request):
 		allowedMethods = ('GET', 'POST', 'HEAD')
-		print 'This is where i am'  	
+		print 'This is where i am'
 		if request.getHeader('request') == 'Newinfo':
  			addInfo(request.content.read());
 			print "Adding new info"
@@ -222,17 +220,16 @@ class FormPage(resource.Resource):
 						data = open(os.path.join('html', 'buy.html'), 'r')
 						return data.read()
 				else:
-					  
+
 						data = open(os.path.join('html', 'login.html'), 'r')
 						return data.read()
-	
+
 	def login(self, request):
-		try:	
+		try:
 			username = request.args['username'][0]
-			self.con = mdb.connect('localhost', 'root', 'cdc', 'Website')
-			self.cur = self.con.cursor()
+			self.con, self.cur = connectDB()
 			query = ("SELECT * FROM USER WHERE username=%s")
-			self.cur.execute(query, username)			
+			self.cur.execute(query, username)
 			check = self.cur.fetchall()
 			if check is not None:
 				print '*******************************'
@@ -246,9 +243,9 @@ class FormPage(resource.Resource):
 		except:
 			return True
 
-
-
-
+FORMAT = "%(asctime)-15s %(levelname)s - %(message)s"
+logging.basicConfig(level=logging.DEBUG, filename='dinoWebApp.log', format=FORMAT)
+logging.info('Server starting...')
 factory = Site(FormPage())
 reactor.listenTCP(8080, factory)
 

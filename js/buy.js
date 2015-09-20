@@ -18,7 +18,7 @@ for (var i in data) {
   var price= data[i][1]
   var txid= data[i][4]
   var element = document.getElementById("img-container");
-  var str = "<form method='POST' id='999' action='http://test.mirr0r.space/begin_transaction'><div class=relative>"  +'<img  src='+name+'>' + "<div class=text>"+id+"</p>"
+  var str = "<form method='POST' id='999' action='http://pay.team9.isucdc.com/begin_transaction'><div class=relative>"  +'<img  src='+name+'>' + "<div class=text>"+id+"</p>"
   if(Quantity>0){
     str+="<div class=Quantity  >"+"Amount Remaining:"+Quantity+"</div>"
     str+="<div class=PriceIn  >"+"Price:"+price+"</div>"
@@ -34,12 +34,11 @@ str+='<input type="hidden" name="amount" value='+price+' >'
         str+='<input type="hidden"  id=play_button  '
   str+=';" value="Buy" />'+"</div>";
 str+=' <input type="hidden" name="txid" value='+txid+ ' >'
-str+= '<input type="hidden" name="postback"  value="pay.teamN.isucdc.co/receipt">'
+str+= '<input type="hidden" name="postback"  value="pay.team9.isucdc.co/receipt">'
 str+='<input type="hidden" name="amount" value='+price+' >'
   }
-    
- 
+
+
     element.innerHTML += str;
 }}
 });
-
