@@ -13,10 +13,16 @@ import logging
 import datetime
 
 def connectDB():
-	con = mdb.connect('localhost', 'root', 'cdc', 'Website')
-	cur = con.cursor()
+	try:
+		con = mdb.connect('localhost', 'root', 'cdc', 'Website')
+		cur = con.cursor()
+	except:
+		logging.warn("Connection to database failed.")
 	logging.debug("Conected to database.")
 	return con, cur
+
+def closeDB(con):
+	con.commit()
 
 def Get_last_Purchase():
 	con, cur = connectDB()
@@ -26,6 +32,7 @@ def Get_last_Purchase():
 	cur.execute(query, int(number) - 1)
 	Last_purchase = cur.fetchall()
 	logging.debug("Last Purchase: %s", str(Last_purchase))
+	closeDB(con)
 	return Last_purchase
 
 def get_number_of_purchases():
@@ -34,6 +41,7 @@ def get_number_of_purchases():
 	cur.execute(query)
 	number = cur.fetchall()
 	logging.debug("Number of purchases: %s", str(number[0][0]))
+	closeDB(con)
 	return number[0][0]
 
 def getPurchaseID(data):
@@ -42,6 +50,7 @@ def getPurchaseID(data):
 	cur.execute(query, data)
 	info = 	cur.fetchall()
 	logging.debug("PurchaseID: %s", str(info[0][4]))
+	closeDB(con)
 	return info[0][4]
 
 def GetPurchaseproof(data):
@@ -52,6 +61,7 @@ def GetPurchaseproof(data):
 	cur.execute("SELECT Proof_of_purchase FROM Products where txid=%s", (str(data[0])))
 	proof =	cur.fetchall()
 	logging.debug("Purchase Proof: %s", str(proof))
+	closeDB(con)
 	return proof
 
 def getDinoInfo():
@@ -60,6 +70,7 @@ def getDinoInfo():
 	cur.execute(query)
 	infoJson = 	cur.fetchall()
 	logging.debug("DinoInfo: %s", str(infoJson))
+	closeDB(con)
 	return json.dumps(infoJson)
 
 def addInfo(data):
@@ -70,45 +81,44 @@ def addInfo(data):
 	Text = data[1].replace("Text=", '')
 	con, cur = connectDB()
 	cur.execute("""INSERT INTO Info VALUES (%s,%s)""", (Headers, Text))
-	con.commit()
+	closeDB(con)
 
 def ProcessPurchase(data):
-	print 'processing data';
-	print data
-	print type(data)
+	logging.debug("ProcessPurchase processing..")
+	logging.debug("Data: %s", str(data))
+	logging.debug("Data Type: %s", type(data))
 	data = data.split("&")
-	print data
+	logging.debug("Data after split: %s", str(data))
 
 	data[0] = data[0].replace('txid=', '')
 	data[1] = data[1].replace('amount=', '')
 	data[2] = data[2].replace('paid=', '')
 
-	print data
+	logging.debug("Data after replacements: %s", str(data))
 	con, cur = connectDB()
 	purchaseID = getPurchaseID(data[0]);
-	print purchaseID
-	print purchaseID
-	print '((((('
+	logging.debug("purchaseID: %s", str(purchaseID))
 	cur.execute("""INSERT INTO Purchases VALUES(%s,%s,%s,%s,%s)""", (data[0], data[1], data[2], str(purchaseID), get_number_of_purchases() + 1))
-	con.commit()
+	closeDB(con)
 	updateTXID(data[0])
+	logging.debug("ProcessPurchase processing complete.")
 
 def StoreMenu():
 	con, cur = connectDB()
 	query = ("SELECT * FROM Products")
 	cur.execute(query)
 	infoJson = 	cur.fetchall()
-	# print infoJson
+	closeDB(con)
 	return json.dumps(infoJson)
 
 def updateTXID(txid):
-	print txid
+	logging.debug("updateTXID parameter: %s", str(txid))
 	try:
 	 	con, cur = connectDB()
 		query = ("SELECT * FROM Products WHERE txid=%s")
 		cur.execute(query, int(txid))
 		check1 = cur.fetchall()
-		con.commit()
+		closeDB(con)
 		# print check1
 		# print check1[0][3]
 		# quanity=int(check1[0][3])-1
@@ -117,7 +127,7 @@ def updateTXID(txid):
 		# con.commit()
 		# print check
 	except:
-		print 'product info stayed the same'
+		logging.info("Product info stayed the same")
 
 class StartPageData(Element):
 	loader = XMLFile(FilePath(os.path.join('html', 'login.html')))
@@ -130,7 +140,7 @@ class loginPage(resource.Resource):
 	isLeaf = False
 	allowedMethods = ('GET', 'POST', 'HEAD',)
 	def __init__(self):
-		print 'loginPage init'
+		logging.debug("loginPage init")
 		resource.Resource.__init__(self)
 
 class FormPage(resource.Resource):
@@ -139,23 +149,23 @@ class FormPage(resource.Resource):
 	def __init__(self):
 		resource.Resource.__init__(self)
 	def render_GET(self, request):
-		print request
-		print request.getHeader('request')
+		logging.debug("FormPage request: %s", str(request))
+		logging.debug("RequestHeader: %s", str(request.getHeader('request')))
 		if request.getHeader('request') == 'info':
 			return getDinoInfo()
 		if request.getHeader('request') == 'Storeinfo':
 			return StoreMenu()
 		if request.getHeader('request') == 'receipt':
-			print 'I am returning purchases'
-			print request.args
+			logging.debug("I am returning purchases")
+			logging.debug("FormPage Request Arguments: %s", str(request.args))
 
 			last_purchase = Get_last_Purchase();
 			proof = GetPurchaseproof(last_purchase)
 
-			print last_purchase
+			logging.debug("FormPage last_purchase: %s", str(last_purchase))
 
 			# last_purchase.append(proof)
-			print last_purchase
+			# print last_purchase
 			return json.dumps(last_purchase)
 		if request.uri == '/':
 			 data = open(os.path.join('html', 'login.html'))
@@ -172,19 +182,19 @@ class FormPage(resource.Resource):
 
 		allowedMethods = ('GET', 'POST', 'HEAD')
 		if request.method == 'POST':
-			print 'Post is woriking'
+			logging.debug('Post is working')
 		if request.method == 'POST' and name == 'receipt':
-			print 'Inisde if state,etn '
+			logging.debug('Inisde if statement')
 			string = request.content.read();
 			ProcessPurchase(string)
 			request.method = 'GET'
-			print name
+			logging.debug("getChild name: %s", str(name))
 
 		if 'png' in name or 'jpeg' in name:
-			print 'returning file'
+			logging.debug('returning file')
 			return static.File(os.path.join('photos', name))
 		if name == 'logout' :
-			print 'Returning login page'
+			logging.debug('Returning login page')
 			return static.File(os.path.join('html', 'login.html'))
 		elif name == "login.css":
 			return static.File(os.path.join('css', 'login.css'))
@@ -211,37 +221,50 @@ class FormPage(resource.Resource):
 
 	def render_POST(self, request):
 		allowedMethods = ('GET', 'POST', 'HEAD')
-		print 'This is where i am'
+		logging.debug("render_POST beginning.")
 		if request.getHeader('request') == 'Newinfo':
  			addInfo(request.content.read());
-			print "Adding new info"
+			logging.debug("Adding new info")
 		if request.uri == '/login':
 				if self.login(request):
 						data = open(os.path.join('html', 'buy.html'), 'r')
+						logging.debug("render_POST end with login.")
 						return data.read()
 				else:
 
 						data = open(os.path.join('html', 'login.html'), 'r')
+						logging.debug("render_POST end with failed login.")
 						return data.read()
 
 	def login(self, request):
+		logging.debug("login beginning.")
 		try:
 			username = request.args['username'][0]
-			self.con, self.cur = connectDB()
-			query = ("SELECT * FROM USER WHERE username=%s")
-			self.cur.execute(query, username)
-			check = self.cur.fetchall()
+			password = request.args['password'][0]
+			#logging.debug("username: %s, password: %s", str(username), str(password))
+			con, cur = connectDB()
+			query = "SELECT * FROM Website.USER WHERE username='%s'" % username
+			logging.debug("query: %s", str(query))
+			exe = cur.execute(query)
+			logging.debug("execute return: %s", str(exe))
+			check = cur.fetchall()
+			logging.debug("login check: %s", check)
+			closeDB(con)
+
 			if check is not None:
-				print '*******************************'
-				print 'THE USER LOGINING IN:' + check[0][0]
-				print '********************************'
-				return True
+				if check[0][1] == password:
+					logging.debug('*******************************')
+					logging.debug('THE USER LOGINING IN:' + check[0][0])
+					logging.debug('********************************')
+					return True
+				else:
+					return False
 
 			else:
-
 				return False
 		except:
-			return True
+			logging.debug("login failed.")
+			return False
 
 FORMAT = "%(asctime)-15s %(levelname)s - %(message)s"
 logging.basicConfig(level=logging.DEBUG, filename='dinoWebApp.log', format=FORMAT)
