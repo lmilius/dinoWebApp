@@ -25,7 +25,7 @@ for (var i in data) {
      str+='<input type="submit"  id=play_button  '
   str+=';" value="Buy" />'+"</div>";
 str+=' <input type="hidden" name="txid" value='+txid+ ' >'
-str+= '<input type="hidden" name="postback"  value="pay.teamN.isucdc.com/receipt">'
+str+= '<input type="hidden" name="postback"  value="pay.team9.isucdc.com/receipt">'
 str+='<input type="hidden" name="amount" value='+price+' >'
   }
   else{
