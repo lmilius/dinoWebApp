@@ -10,71 +10,54 @@ import MySQLdb as mdb
 import json
 import random
 
-def connectDB():
+def Get_last_Purchase():
 	con = mdb.connect('localhost', 'root', 'cdc', 'Website')
 	cur = con.cursor()
-	return con, cur
-
-def closeDB(con):
-	con.commit()
-
-def checkUsername(username):
-	self.con = mdb.connect('localhost', 'root', 'cdc', 'Website')
-	self.cur = self.con.cursor()
-	query = ("SELECT * FROM USER WHERE username=?")
-	self.cur.execute(query, username)			
-	check = self.cur.fetchall()
-	closeDB(con)
-	return check
-
-def Get_last_Purchase():
-	con, cur = connectDB()
 	number = get_number_of_purchases()	
 	print number
-	query = ("SELECT * FROM Purchases where Tracker=? ")
+	query = ("SELECT * FROM Purchases where Tracker=%s ")
 	cur.execute(query, int(number) - 1)
 	Last_purchase = cur.fetchall()
-	closeDB(con)
 	print Last_purchase
 	return Last_purchase
 
 def get_number_of_purchases():
-	con, cur = connectDB()
+	con = mdb.connect('localhost', 'root', 'cdc', 'Website')
+	cur = con.cursor()
 	query = ("SELECT Max(Tracker) FROM Purchases")
 	cur.execute(query)
 	number = cur.fetchall()
-	closeDB(con)
 	print number[0][0]
 	print '&&&&&&'
-	return number[0][0]
+	return number[0][0]	
 	
 def getPurchaseID(data):
-	con, cur = connectDB()
-	query = ("SELECT * FROM Products where txid=? ")
+	con = mdb.connect('localhost', 'root', 'cdc', 'Website')
+	cur = con.cursor()
+	query = ("SELECT * FROM Products where txid=%s ")
 	cur.execute(query, data)
 	info = 	cur.fetchall()	
-	closeDB(con)
 	print info[0][4]
 	print '***********'
 	return info[0][4]
 	
 def GetPurchaseproof(data):
-	con, cur = connectDB()
-	query = ("SELECT * FROM Products where txid=?")
-	cur.execute("""SELECT Proof_of_purchase FROM Products where txid=?""", (str(data[0])))
-	proof = cur.fetchall()
-	closeDB(con)
+	con = mdb.connect('localhost', 'root', 'cdc', 'Website')
+	cur = con.cursor()
+	query = ("SELECT * FROM Products where txid=%s")
+	cur.execute("""SELECT Proof_of_purchase FROM Products where txid=%s""", (str(data[0])))
+	proof = 	cur.fetchall()
 	print "-------IN GETPURCHASEPROOF---------"
 	print proof
 	# print infoJson	
 	return proof
        
 def getDinoInfo():
-	con, cur = connectDB()
+	con = mdb.connect('localhost', 'root', 'cdc', 'Website')
+	cur = con.cursor()
 	query = ("SELECT * FROM Info")
 	cur.execute(query)
 	infoJson = 	cur.fetchall()	
-	closeDB(con)
 	# print infoJson	
 	return json.dumps(infoJson)
 
@@ -83,9 +66,10 @@ def addInfo(data):
 	data = data.split("&")
 	Headers = data[0].replace("Headers=", '')
 	Text = data[1].replace("Text=", '')
-	con, cur = connectDB()
-	cur.execute("""INSERT INTO Info VALUES (?,?)""", (Headers, Text))
-	closeDB(con)
+	con = mdb.connect('localhost', 'root', 'cdc', 'Website')
+	cur = con.cursor()
+	cur.execute("""INSERT INTO Info VALUES (%s,%s)""", (Headers, Text))
+	con.commit()
 
 def ProcessPurchase(data):
 	print 'processing data';
@@ -99,32 +83,34 @@ def ProcessPurchase(data):
 	data[2] = data[2].replace('paid=', '')
 	
 	print data
-	con, cur = connectDB()
+	con = mdb.connect('localhost', 'root', 'cdc', 'Website')
+	cur = con.cursor()
 	purchaseID = getPurchaseID(data[0]);
 	print purchaseID
 	print purchaseID
 	print '((((('
-	cur.execute("""INSERT INTO Purchases VALUES(?,?,?,?,?)""", (data[0], data[1], data[2], str(purchaseID), get_number_of_purchases() + 1))
-	closeDB(con)
+	cur.execute("""INSERT INTO Purchases VALUES(%s,%s,%s,%s,%s)""", (data[0], data[1], data[2], str(purchaseID), get_number_of_purchases() + 1))
+	con.commit()
 	updateTXID(data[0])
 	
 def StoreMenu():
-	con, cur = connectDB()
+	con = mdb.connect('localhost', 'root', 'cdc', 'Website')
+	cur = con.cursor()
 	query = ("SELECT * FROM Products")
 	cur.execute(query)
 	infoJson = 	cur.fetchall()	
-	closeDB(con)
 	# print infoJson	
 	return json.dumps(infoJson)
        
 def updateTXID(txid):
 	print txid
         try:   
-	    con, cur = connectDB()
-	    query = ("SELECT * FROM Products WHERE txid=?")
-	    cur.execute(query, int(txid))			
-	    check1 = cur.fetchall()
-	    closeDB(con)
+	     	con = mdb.connect('localhost', 'root', 'cdc', 'Website')
+		cur = con.cursor()
+		query = ("SELECT * FROM Products WHERE txid=%s")
+		cur.execute(query, int(txid))			
+		check1 = cur.fetchall()
+		con.commit()
 		# print check1
 		# print check1[0][3]
 		# quanity=int(check1[0][3])-1
@@ -245,18 +231,16 @@ class FormPage(resource.Resource):
 	def login(self, request):
 		try:	
 		    username = request.args['username'][0]
-		    password = request.args['password'][0]
-		    check = checkUsername(username)
+		    self.con = mdb.connect('localhost', 'root', 'cdc', 'Website')
+		    self.cur = self.con.cursor()
+		    query = ("SELECT * FROM USER WHERE username=%s")
+		    self.cur.execute(query, username)			
+		    check = self.cur.fetchall()
 		    if check is not None:
-				if check[0] is not None:
-					if check[1] is not None:
-						if username == check[0] and password == check[1]:
-							print '*******************************'
-							print 'THE USER LOGINING IN:' + check[0][0]
-							print '********************************'
-							return True
-				
-				return False
+				print '*******************************'
+				print 'THE USER LOGINING IN:' + check[0][0]
+				print '********************************'
+				return True
 		    else:
 		        return False
    		except:
