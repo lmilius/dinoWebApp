@@ -5,20 +5,25 @@ from twisted.web.server import Site
 from twisted.web import static, resource
 from twisted.web.template import XMLFile
 from twisted.python.filepath import FilePath
-import os
+import os, sys
 import MySQLdb as mdb
 import json
 import random
 import logging
 import datetime
+import hashlib, uuid
+import re
+
+SQLINJECTION = re.compile(r'([^a-zA-Z0-9.])')
 
 def connectDB():
 	try:
 		con = mdb.connect('localhost', 'root', 'cdc', 'Website')
 		cur = con.cursor()
+		logging.debug("Conected to database.")
 	except:
 		logging.warn("Connection to database failed.")
-	logging.debug("Conected to database.")
+
 	return con, cur
 
 def closeDB(con):
@@ -240,29 +245,37 @@ class FormPage(resource.Resource):
 		logging.debug("login beginning.")
 		try:
 			username = request.args['username'][0]
+			if SQLINJECTION.search(username):
+				logging.debug('SQL Injection found!')
+				return False
 			password = request.args['password'][0]
+			salt = uuid.uuid4().hex
+			hashedPassword = hashlib.sha512(password + salt).hexdigest()
 			#logging.debug("username: %s, password: %s", str(username), str(password))
 			con, cur = connectDB()
 			query = "SELECT * FROM Website.USER WHERE username='%s'" % username
 			logging.debug("query: %s", str(query))
 			exe = cur.execute(query)
 			logging.debug("execute return: %s", str(exe))
+			if exe == 0:
+				return False
 			check = cur.fetchall()
-			logging.debug("login check: %s", check)
+			#logging.debug("login check: %s", check)
 			closeDB(con)
 
 			if check is not None:
 				if check[0][1] == password:
 					logging.debug('*******************************')
 					logging.debug('THE USER LOGINING IN:' + check[0][0])
-					logging.debug('********************************')
+					logging.debug('*******************************')
 					return True
 				else:
 					return False
-
 			else:
 				return False
-		except:
+		except Exception as inst:
+			logging.warn('Error:' + str(inst))
+			logging.warn('Error parameters: ' + str(inst.args))
 			logging.debug("login failed.")
 			return False
 
