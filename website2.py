@@ -147,24 +147,26 @@ class FormPage(resource.Resource):
         
 	def render_GET(self, request):
 		print request
-		print request.getHeader('request')
-		if request.getHeader('request') == 'info':
-			return getDinoInfo()
-		if request.getHeader('request') == 'Storeinfo':
-			return StoreMenu()
-		if request.getHeader('request') == 'receipt':
-			print 'I am returning purchases'
-			print request.args
-			last_purchase = Get_last_Purchase();
-			proof = GetPurchaseproof(last_purchase)
-			print last_purchase	
-			# last_purchase.append(proof)
-			print last_purchase
-	       	return json.dumps(last_purchase)
-	
-		if request.uri == '/':
-			data = open(os.path.join('html', 'login.html'))
-			return data.read()
+
+
+	print request.getHeader('request')
+	if request.getHeader('request') == 'info':
+               	return getDinoInfo()
+	if request.getHeader('request') == 'Storeinfo':
+               	return StoreMenu()
+	if request.getHeader('request') == 'receipt':
+		print 'I am returning purchases'
+		print request.args
+		last_purchase = Get_last_Purchase();
+		proof = GetPurchaseproof(last_purchase)
+		print last_purchase	
+		# last_purchase.append(proof)
+		print last_purchase
+       	return json.dumps(last_purchase)
+
+	if request.uri == '/':
+		data = open(os.path.join('html', 'login.html'))
+		return data.read()
 	
 	def renderDone(self, result, request):
 
