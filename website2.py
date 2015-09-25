@@ -33,7 +33,7 @@ def connectDB():
 
 	except:
 		logging.warn("Error reading configuration file.")
-		logging.debug('%s %s %s %s' %(host, username, password, database))
+		#logging.debug('%s %s %s %s' %(host, username, password, database))
 		return None, None
 
 	try:
@@ -277,7 +277,6 @@ class FormPage(resource.Resource):
 			UUID_SALT = config.get('salt', 'uuid_salt')
 			salt = UUID_SALT
 			hashedPassword = hashlib.sha512(password + salt).hexdigest()
-			#logging.debug("username: %s, password: %s", str(username), str(password))
 			con, cur = connectDB()
 			query = "SELECT * FROM Website.USER WHERE username='%s'" % username
 			logging.debug("query: %s", str(query))
@@ -286,8 +285,6 @@ class FormPage(resource.Resource):
 			if exe == 0:
 				return False
 			check = cur.fetchall()
-			logging.debug("login check: %s", check)
-			logging.debug('HashedPassword: %s', hashedPassword)
 			closeDB(con)
 
 			if check is not None:

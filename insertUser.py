@@ -25,7 +25,7 @@ def connectDB():
 		database = config.get(configSection, 'database')
 	except:
 		logging.warn("Error reading configuration file.")
-		logging.debug('%s %s %s %s' % (host, username, password, database))
+		#logging.debug('%s %s %s %s' % (host, username, password, database))
 		return None, None
 
 	try:
@@ -35,7 +35,7 @@ def connectDB():
 		return con, cur
 	except:
 		logging.warn("Connection to database failed.")
-		logging.debug('%s %s %s %s' % (host, username, password, database))
+		#logging.debug('%s %s %s %s' % (host, username, password, database))
 		return None, None
 
 def closeDB(con):
