@@ -34,7 +34,7 @@ str+='<input type="hidden" name="amount" value='+price+' >'
         str+='<input type="hidden"  id=play_button  '
   str+=';" value="Buy" />'+"</div>";
 str+=' <input type="hidden" name="txid" value='+txid+ ' >'
-str+= '<input type="hidden" name="postback"  value="pay.team9.isucdc.co/receipt">'
+str+= '<input type="hidden" name="postback"  value="pay.team9.isucdc.com/receipt">'
 str+='<input type="hidden" name="amount" value='+price+' >'
   }
 
