@@ -271,7 +271,11 @@ class FormPage(resource.Resource):
 				logging.debug('SQL Injection found!')
 				return False
 			password = request.args['password'][0]
-			salt = uuid.uuid4().hex
+
+			config = ConfigParser.ConfigParser()
+			config.read('server.cfg')
+			UUID_SALT = config.get('salt', 'uuid_salt')
+			salt = UUID_SALT
 			hashedPassword = hashlib.sha512(password + salt).hexdigest()
 			#logging.debug("username: %s, password: %s", str(username), str(password))
 			con, cur = connectDB()
@@ -282,16 +286,18 @@ class FormPage(resource.Resource):
 			if exe == 0:
 				return False
 			check = cur.fetchall()
-			#logging.debug("login check: %s", check)
+			logging.debug("login check: %s", check)
+			logging.debug('HashedPassword: %s', hashedPassword)
 			closeDB(con)
 
 			if check is not None:
-				if check[0][1] == password:
+				if check[0][1] == hashedPassword:
 					logging.debug('*******************************')
 					logging.debug('THE USER LOGINING IN:' + check[0][0])
 					logging.debug('*******************************')
 					return True
 				else:
+					logging.debug('Password did not match.')
 					return False
 			else:
 				return False

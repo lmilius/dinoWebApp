@@ -3,6 +3,7 @@ import MySQLdb as mdb
 import ConfigParser
 import logging
 import re
+import hashlib, uuid
 
 
 SQLINJECTION = re.compile(r'([^a-zA-Z0-9.])')
@@ -44,8 +45,15 @@ def insertUser(username, password):
 	if SQLINJECTION.search(username):
 		logging.debug('SQL Injection found!')
 		return False
+
+	config = ConfigParser.ConfigParser()
+	config.read('server.cfg')
+	UUID_SALT = config.get('salt', 'uuid_salt')
+	salt = UUID_SALT
+	hashedPassword = hashlib.sha512(password + salt).hexdigest()
+
 	con, cur = connectDB()
-	query = "INSERT INTO USER VALUES('%s', '%s');" % (username, password)
+	query = "INSERT INTO USER VALUES('%s', '%s');" % (username, hashedPassword)
 	logging.debug(query)
 	exe = cur.execute(query)
 	if exe == 1:
