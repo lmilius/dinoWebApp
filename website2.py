@@ -13,24 +13,46 @@ import logging
 import datetime
 import hashlib, uuid
 import re
+import ConfigParser
 
 SQLINJECTION = re.compile(r'([^a-zA-Z0-9.])')
 
 def connectDB():
+	configSection = 'MySQL'
+	host = None
+	username = None
+	password = None
+	database = None
 	try:
-		con = mdb.connect('localhost', 'root', 'cdc', 'Website')
+		config = ConfigParser.ConfigParser()
+		config.read('server.cfg')
+		host = config.get(configSection, 'host')
+		username = config.get(configSection, 'username')
+		password = config.get(configSection, 'password')
+		database = config.get(configSection, 'database')
+
+	except:
+		logging.warn("Error reading configuration file.")
+		logging.debug('%s %s %s %s' %(host, username, password, database))
+		return None, None
+
+	try:
+		con = mdb.connect(host, username, password, database)
 		cur = con.cursor()
 		logging.debug("Conected to database.")
+		return con, cur
 	except:
 		logging.warn("Connection to database failed.")
-
-	return con, cur
+		return None, None
 
 def closeDB(con):
 	con.commit()
 
 def Get_last_Purchase():
-	con, cur = connectDB()
+	try:
+		con, cur = connectDB()
+	except:
+		raise
 	number = get_number_of_purchases()
 	logging.debug("Number of purchases: %s", str(number))
 	query = ("SELECT * FROM Purchases where Tracker=%s ")
