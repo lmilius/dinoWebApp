@@ -5,10 +5,10 @@ import logging
 import re
 import hashlib, uuid
 
-
+CONFIG_LOC = '/home/twisted/'
 SQLINJECTION = re.compile(r'([^a-zA-Z0-9.])')
 FORMAT = "%(asctime)-15s %(levelname)s - %(message)s"
-logging.basicConfig(filename='insertUser.log', level=logging.DEBUG, format=FORMAT)
+logging.basicConfig(filename=CONFIG_LOC + 'insertUser.log', level=logging.DEBUG, format=FORMAT)
 
 def connectDB():
 	configSection = 'MySQL'
@@ -18,14 +18,13 @@ def connectDB():
 	database = None
 	try:
 		config = ConfigParser.ConfigParser()
-		config.read('server.cfg')
+		config.read(CONFIG_LOC + 'server.cfg')
 		host = config.get(configSection, 'host')
 		username = config.get(configSection, 'username')
 		password = config.get(configSection, 'password')
 		database = config.get(configSection, 'database')
 	except:
 		logging.warn("Error reading configuration file.")
-		#logging.debug('%s %s %s %s' % (host, username, password, database))
 		return None, None
 
 	try:
@@ -35,7 +34,6 @@ def connectDB():
 		return con, cur
 	except:
 		logging.warn("Connection to database failed.")
-		#logging.debug('%s %s %s %s' % (host, username, password, database))
 		return None, None
 
 def closeDB(con):
@@ -47,7 +45,7 @@ def insertUser(username, password):
 		return False
 
 	config = ConfigParser.ConfigParser()
-	config.read('server.cfg')
+	config.read(CONFIG_LOC + 'server.cfg')
 	UUID_SALT = config.get('salt', 'uuid_salt')
 	salt = UUID_SALT
 	hashedPassword = hashlib.sha512(password + salt).hexdigest()
