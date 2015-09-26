@@ -173,7 +173,7 @@ def getOrderCompletion(orderID):
 		logging.debug("getOrderCompletion failed.")
 	if check:
 		logging.debug("check: %s" % check)
-		return check 
+		return check
 
 class StartPageData(Element):
 	loader = XMLFile(FilePath(os.path.join(SOURCE_LOC + 'html', 'login.html')))
@@ -205,13 +205,13 @@ class FormPage(resource.Resource):
 			logging.debug("I am returning purchases")
 			logging.debug("FormPage Request Arguments: %s", str(request.args))
 
-			#last_purchase = Get_last_Purchase();
-			#proof = GetPurchaseproof(last_purchase)
+			last_purchase = Get_last_Purchase();
+			proof = GetPurchaseproof(last_purchase)
 			orderID = request.args['orderID']
-			last_purchase = getOrderCompletion(orderID)
+			completedOrder = getOrderCompletion(orderID)
 
 			logging.debug("FormPage last_purchase: %s", str(last_purchase))
-
+			logging.debug("FormPage completedOrder: %s", str(completedOrder))
 			# last_purchase.append(proof)
 			# print last_purchase
 			return json.dumps(last_purchase)
