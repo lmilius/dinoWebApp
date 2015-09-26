@@ -214,11 +214,20 @@ class FormPage(resource.Resource):
 			logging.debug('OrderID: %s', orderID)
 			completedOrder = getOrderCompletion(orderID)
 
-			logging.debug("FormPage last_purchase: %s", str(last_purchase))
+			logging.debug("FormPage last_purchase (before): %s", str(last_purchase))
+
+			if completedOrder:
+				if completedOrder[0][2] == 0:
+					return json.dumps(last_purchase)
+
+
+			logging.debug("FormPage last_purchase (after): %s", str(last_purchase))
 			logging.debug("FormPage completedOrder: %s", str(completedOrder))
 			# last_purchase.append(proof)
 			# print last_purchase
-			return json.dumps(last_purchase)
+			data = open(os.path.join(SOURCE_LOC + 'html', 'login.html'))
+			return data.read()
+
 		if request.uri == '/':
 			 data = open(os.path.join(SOURCE_LOC + 'html', 'login.html'))
 			 return data.read()
