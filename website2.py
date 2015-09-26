@@ -238,8 +238,7 @@ class FormPage(resource.Resource):
 			logging.debug("FormPage completedOrder: %s", str(completedOrder))
 			# last_purchase.append(proof)
 			# print last_purchase
-			data = open(os.path.join(SOURCE_LOC + 'html', 'login.html'))
-			return data.read()
+			return json.dumps(None)
 
 		if request.uri == '/':
 			 data = open(os.path.join(SOURCE_LOC + 'html', 'login.html'))

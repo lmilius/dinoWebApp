@@ -17,11 +17,16 @@ console.log(data);
   var purchased=data[2];
   var PurchaseProf=data[3]
   var element = document.getElementById("img-container");
-  var str = '<p>Thank you for buying this item<p> <p> Your purchase id is '+ id  + "<p>The amount paid is :"+ money+'<p> The item has been purchased:'+purchased+'<p>The proof of pruchase is :'+ PurchaseProf;
 
+  if (data == null){}
+    var str = '<p>Thank you for buying this item<p> <p> Your purchase id is '+ id  + "<p>The amount paid is :"+ money+'<p> The item has been purchased:'+purchased+'<p>The proof of pruchase is :'+ PurchaseProf;
 
+    element.innerHTML += str;
+  } else {
+    var str = '<p>ACCESS DENIED<p>';
 
-  element.innerHTML += str;
+    element.innerHTML += str;
+  }
 
 },
 error:function(error){
