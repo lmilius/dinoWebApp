@@ -18,6 +18,8 @@ import ConfigParser
 SQLINJECTION = re.compile(r'([^a-zA-Z0-9.])')
 CONFIG_LOC = '/home/twisted/'
 SOURCE_LOC = '/var/www/dinoWebApp/'
+#CONFIG_LOC = './'
+#SOURCE_LOC = './'
 
 def connectDB():
 	configSection = 'MySQL'
