@@ -48,7 +48,7 @@ def insertUser(username, password):
 	config.read(CONFIG_LOC + 'server.cfg')
 	UUID_SALT = config.get('salt', 'uuid_salt')
 	salt = UUID_SALT
-	hashedPassword = hashlib.sha512(password + salt).hexdigest()
+	hashedPassword = hashlib.sha512((password.encode('UTF-8')) + salt).hexdigest()
 
 	con, cur = connectDB()
 	query = "INSERT INTO USER VALUES('%s', '%s');" % (username, hashedPassword)

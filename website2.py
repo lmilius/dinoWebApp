@@ -35,7 +35,6 @@ def connectDB():
 
 	except:
 		logging.warn("Error reading configuration file.")
-		#logging.debug('%s %s %s %s' %(host, username, password, database))
 		return None, None
 
 	try:
@@ -127,7 +126,10 @@ def ProcessPurchase(data):
 	con, cur = connectDB()
 	purchaseID = getPurchaseID(data[0]);
 	logging.debug("purchaseID: %s", str(purchaseID))
-	cur.execute("""INSERT INTO Purchases VALUES(%s,%s,%s,%s,%s)""", (data[0], data[1], data[2], str(purchaseID), get_number_of_purchases() + 1))
+	numberOfPurchases = get_number_of_purchases()
+	if numberOfPurchases is None:
+		numberOfPurchases = 0
+	cur.execute("""INSERT INTO Purchases VALUES(%s,%s,%s,%s,%s);""", (data[0], data[1], data[2], str(purchaseID), numberOfPurchases + 1))
 	closeDB(con)
 	updateTXID(data[0])
 	logging.debug("ProcessPurchase processing complete.")
@@ -157,6 +159,21 @@ def updateTXID(txid):
 		# print check
 	except:
 		logging.info("Product info stayed the same")
+
+def getOrderCompletion(orderID):
+	logging.debug("Getting order completion details from DB.")
+	logging.debug("orderID: %s" % orderID)
+	try:
+		con, cur = connectDB()
+		query = "SELECT * FROM orders WHERE orderID='%s';" % orderID
+		cur.execute(query)
+		check = cur.fetchall()
+		closeDB(con)
+	except:
+		logging.debug("getOrderCompletion failed.")
+	if check:
+		logging.debug("check: %s" % check)
+		return check 
 
 class StartPageData(Element):
 	loader = XMLFile(FilePath(os.path.join(SOURCE_LOC + 'html', 'login.html')))
@@ -188,8 +205,10 @@ class FormPage(resource.Resource):
 			logging.debug("I am returning purchases")
 			logging.debug("FormPage Request Arguments: %s", str(request.args))
 
-			last_purchase = Get_last_Purchase();
-			proof = GetPurchaseproof(last_purchase)
+			#last_purchase = Get_last_Purchase();
+			#proof = GetPurchaseproof(last_purchase)
+			orderID = request.args['orderID']
+			last_purchase = getOrderCompletion(orderID)
 
 			logging.debug("FormPage last_purchase: %s", str(last_purchase))
 
@@ -278,7 +297,7 @@ class FormPage(resource.Resource):
 			config.read(CONFIG_LOC + 'server.cfg')
 			UUID_SALT = config.get('salt', 'uuid_salt')
 			salt = UUID_SALT
-			hashedPassword = hashlib.sha512(password + salt).hexdigest()
+			hashedPassword = hashlib.sha512((password.encode('UTF-8')) + salt).hexdigest()
 			con, cur = connectDB()
 			query = "SELECT * FROM Website.USER WHERE username='%s'" % username
 			logging.debug("query: %s", str(query))
