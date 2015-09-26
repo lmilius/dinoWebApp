@@ -227,6 +227,7 @@ class FormPage(resource.Resource):
 			completedOrder = getOrderCompletion(orderID)
 
 			logging.debug("FormPage last_purchase (before): %s", str(last_purchase))
+			logging.debug("FormPage completedOrder: %s", str(completedOrder))
 
 			if completedOrder:
 				if completedOrder[0][2] == 0:
@@ -235,7 +236,7 @@ class FormPage(resource.Resource):
 
 			last_purchase[0][0] = 0
 			logging.debug("FormPage last_purchase (after): %s", str(last_purchase))
-			logging.debug("FormPage completedOrder: %s", str(completedOrder))
+
 			# last_purchase.append(proof)
 			# print last_purchase
 
