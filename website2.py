@@ -329,9 +329,9 @@ class FormPage(resource.Resource):
 			hashedPassword = hashlib.sha512((password.encode('UTF-8')) + salt).hexdigest()
 			con, cur = connectDB()
 			logging.debug("username: %s", username)
-			query = ("""SELECT * FROM Website.USER WHERE username='%s'""", str(username))
+			query = ("SELECT * FROM Website.USER WHERE username='%s'")
 			logging.debug("query: %s", str(query))
-			exe = cur.execute(query)
+			exe = cur.execute(query, str(username))
 			logging.debug("execute return: %s", str(exe))
 			if exe == 0:
 				return False
