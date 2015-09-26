@@ -4,7 +4,7 @@ $.ajax({
 url:'/',
 method:'GET',
 type:'json',
-headers:{'request':'receipt'},
+headers:{'request':'receipt','orderID':getParameterByName('orderID')},
 success:function(data){
 data=data.toString().replace('[','').replace('[','');
 data=data.split(',');
@@ -31,3 +31,10 @@ console.log('error');
 
 }
 });
+
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+};
