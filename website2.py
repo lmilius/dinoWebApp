@@ -177,6 +177,18 @@ def getOrderCompletion(orderID):
 		logging.debug("check: %s" % check)
 		return check
 
+def updateViewed(orderID):
+	logging.debug("Updating viewed column to 1.")
+	logging.debug("OrderID: %s", orderID)
+	try:
+		con, cur = connectDB()
+		query = "UPDATE orders SET viewed=1 WHERE orderID='%s';" % orderID
+		cur.execute(query)
+		check = cur.fetchall()
+		closeDB(con)
+	except:
+		logging.debug("updateViewed failed.")
+
 class StartPageData(Element):
 	loader = XMLFile(FilePath(os.path.join(SOURCE_LOC + 'html', 'login.html')))
 	isLeaf = False
@@ -218,6 +230,7 @@ class FormPage(resource.Resource):
 
 			if completedOrder:
 				if completedOrder[0][2] == 0:
+					updateViewed(orderID)
 					return json.dumps(last_purchase)
 
 
