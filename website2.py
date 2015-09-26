@@ -206,9 +206,11 @@ class FormPage(resource.Resource):
 		if request.getHeader('request') == 'receipt':
 			logging.debug("I am returning purchases")
 			logging.debug("FormPage Request Arguments: %s", str(request.args))
+			logging.debug("RequestURI: %s", str(request.uri))
 
 			last_purchase = Get_last_Purchase();
 			proof = GetPurchaseproof(last_purchase)
+
 			orderID = request.args['orderID']
 			completedOrder = getOrderCompletion(orderID)
 
