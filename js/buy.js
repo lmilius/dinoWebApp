@@ -6,6 +6,7 @@ type:'json',
 headers:{'request':'Storeinfo'},
 success:function(data){
 data=JSON.parse(data);
+console.log(data)
 src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
 src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"
 for (var i in data) {
