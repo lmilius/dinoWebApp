@@ -142,7 +142,7 @@ def StoreMenu():
 	cur.execute(query)
 	infoJson = 	cur.fetchall()
 	for item in infoJson:
-		logging.debug('item: %s', item)
+		logging.debug('item: %s', arr(item)[5])
 	logging.debug("infoJson: %s", infoJson)
 
 	closeDB(con)
