@@ -233,12 +233,13 @@ class FormPage(resource.Resource):
 					updateViewed(orderID)
 					return json.dumps(last_purchase)
 
-
+			last_purchase[0][0] = None
 			logging.debug("FormPage last_purchase (after): %s", str(last_purchase))
 			logging.debug("FormPage completedOrder: %s", str(completedOrder))
 			# last_purchase.append(proof)
 			# print last_purchase
-			return json.dumps((None,None,None,None))
+
+			return json.dumps(last_purchase)
 
 		if request.uri == '/':
 			 data = open(os.path.join(SOURCE_LOC + 'html', 'login.html'))
