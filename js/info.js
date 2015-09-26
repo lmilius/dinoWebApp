@@ -10,8 +10,6 @@ headers:{'request':'info'},
 success:function(data){
 
 json=JSON.parse(data);
-
-console.log(data);
 for (var i in json) {
 
 
@@ -34,7 +32,6 @@ document.getElementById("div2").innerHTML=str
 }
 function sumbitInfo(){
 var json={'Headers':document.getElementById("NewInfo").elements['headers'].value,'Text':document.getElementById("NewInfo").elements['info'].value};
-console.log(document.getElementById("NewInfo").elements['headers'].value);
 $.ajax({
 url:'/',
 method:'POST',

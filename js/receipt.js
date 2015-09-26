@@ -8,7 +8,6 @@ headers:{'request':'receipt','orderID':getParameterByName('orderID')},
 success:function(data){
 data=data.toString().replace('[','').replace('[','');
 data=data.split(',');
-console.log(data);
 
 
 
