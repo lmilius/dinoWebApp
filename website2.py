@@ -139,7 +139,7 @@ def ProcessPurchase(data):
 def StoreMenu():
 	try:
 		con, cur = connectDB()
-		query = ("SELECT Text, Price, Img, Quanity, txid FROM Products")
+		query = ("SELECT Text, Price, Img, Quantity, txid FROM Products")
 		cur.execute(query)
 		logging.debug('After query in StoreMenu')
 		infoJson = 	cur.fetchall()
