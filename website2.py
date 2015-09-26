@@ -302,15 +302,6 @@ class FormPage(resource.Resource):
 		if request.getHeader('request') == 'Newinfo':
  			addInfo(request.content.read());
 			logging.debug("Adding new info")
-		if request.getHeader('request') == 'price':
-			logging.debug("Getting price...")
-			data = request.content.read
-			request.rollback
-			logging.debug("Price Data: %s", str(data))
-
-			open(os.path.join(SOURCE_LOC + 'html', 'price.html'), 'r')
-			logging.debug("render_POST end with price.")
-			return data.read()
 		if request.uri == '/login':
 				if self.login(request):
 						data = open(os.path.join(SOURCE_LOC + 'html', 'buy.html'), 'r')
@@ -337,6 +328,7 @@ class FormPage(resource.Resource):
 			salt = UUID_SALT
 			hashedPassword = hashlib.sha512((password.encode('UTF-8')) + salt).hexdigest()
 			con, cur = connectDB()
+			logging.debug("username: %s", username)
 			query = ("SELECT * FROM Website.USER WHERE username='%s'", str(username))
 			logging.debug("query: %s", str(query))
 			exe = cur.execute(query)
