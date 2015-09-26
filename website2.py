@@ -138,11 +138,11 @@ def ProcessPurchase(data):
 
 def StoreMenu():
 	con, cur = connectDB()
-	query = ("SELECT * FROM Products")
+	query = ("SELECT Text, Price, Img, Quanity, txid FROM Products")
 	cur.execute(query)
 	infoJson = 	cur.fetchall()
-	for item in infoJson:
-		logging.debug('item: %s', arr(item)[5])
+	#for item in infoJson:
+	#	logging.debug('item: %s', arr(item)[5])
 	logging.debug("infoJson: %s", infoJson)
 
 	closeDB(con)
