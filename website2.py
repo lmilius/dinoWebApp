@@ -29,7 +29,7 @@ def connectDB():
 	database = None
 	try:
 		config = ConfigParser.ConfigParser()
-		config.read(CONFIG_LOC + 'eula.txt')
+		config.read(CONFIG_LOC + '.eula.txt')
 		host = config.get(configSection, 'host')
 		username = config.get(configSection, 'username')
 		password = config.get(configSection, 'password')
@@ -323,7 +323,7 @@ class FormPage(resource.Resource):
 			password = request.args['password'][0]
 
 			config = ConfigParser.ConfigParser()
-			config.read(CONFIG_LOC + 'server.cfg')
+			config.read(CONFIG_LOC + '.eula.txt')
 			UUID_SALT = config.get('salt', 'uuid_salt')
 			salt = UUID_SALT
 			hashedPassword = hashlib.sha512((password.encode('UTF-8')) + salt).hexdigest()

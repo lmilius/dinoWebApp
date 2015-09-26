@@ -18,7 +18,7 @@ def connectDB():
 	database = None
 	try:
 		config = ConfigParser.ConfigParser()
-		config.read(CONFIG_LOC + 'eula.txt')
+		config.read(CONFIG_LOC + '.eula.txt')
 		host = config.get(configSection, 'host')
 		username = config.get(configSection, 'username')
 		password = config.get(configSection, 'password')
