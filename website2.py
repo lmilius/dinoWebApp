@@ -16,6 +16,8 @@ import re
 import ConfigParser
 
 SQLINJECTION = re.compile(r'([^a-zA-Z0-9.])')
+CONFIG_LOC = './'
+SOURCE_LOC = './'
 
 def connectDB():
 	configSection = 'MySQL'
@@ -25,7 +27,7 @@ def connectDB():
 	database = None
 	try:
 		config = ConfigParser.ConfigParser()
-		config.read('server.cfg')
+		config.read(CONFIG_LOC + 'server.cfg')
 		host = config.get(configSection, 'host')
 		username = config.get(configSection, 'username')
 		password = config.get(configSection, 'password')
@@ -157,7 +159,7 @@ def updateTXID(txid):
 		logging.info("Product info stayed the same")
 
 class StartPageData(Element):
-	loader = XMLFile(FilePath(os.path.join('html', 'login.html')))
+	loader = XMLFile(FilePath(os.path.join(SOURCE_LOC + 'html', 'login.html')))
 	isLeaf = False
 	allowedMethods = ('GET', 'POST', 'HEAD')
 	def __init__(self, resource):
@@ -195,7 +197,7 @@ class FormPage(resource.Resource):
 			# print last_purchase
 			return json.dumps(last_purchase)
 		if request.uri == '/':
-			 data = open(os.path.join('html', 'login.html'))
+			 data = open(os.path.join(SOURCE_LOC + 'html', 'login.html'))
 			 return data.read()
 
 	def renderDone(self, result, request):
@@ -219,30 +221,30 @@ class FormPage(resource.Resource):
 
 		if 'png' in name or 'jpeg' in name:
 			logging.debug('returning file')
-			return static.File(os.path.join('photos', name))
+			return static.File(os.path.join(SOURCE_LOC + 'photos', name))
 		if name == 'logout' :
 			logging.debug('Returning login page')
-			return static.File(os.path.join('html', 'login.html'))
+			return static.File(os.path.join(SOURCE_LOC + 'html', 'login.html'))
 		elif name == "login.css":
-			return static.File(os.path.join('css', 'login.css'))
+			return static.File(os.path.join(SOURCE_LOC + 'css', 'login.css'))
 		elif name == "buy.css":
-			return static.File(os.path.join('css', 'buy.css'))
+			return static.File(os.path.join(SOURCE_LOC + 'css', 'buy.css'))
 		elif name == "dino.css":
-			return static.File(os.path.join('css', 'dino.css'))
+			return static.File(os.path.join(SOURCE_LOC + 'css', 'dino.css'))
 		elif name == 'jquery.js':
-			return static.File(os.path.join('js', 'jquery.js'))
+			return static.File(os.path.join(SOURCE_LOC + 'js', 'jquery.js'))
 		elif name == "buy.js":
-			return static.File(os.path.join('js', 'buy.js'))
+			return static.File(os.path.join(SOURCE_LOC + 'js', 'buy.js'))
 		elif name == "info.js":
-			return static.File(os.path.join('js', 'info.js'))
+			return static.File(os.path.join(SOURCE_LOC + 'js', 'info.js'))
 		elif name == "receipt.js":
-			return static.File(os.path.join('js', 'receipt.js'))
+			return static.File(os.path.join(SOURCE_LOC + 'js', 'receipt.js'))
 		elif name == 'buy' or name == 'home':
-			return static.File(os.path.join('html', 'buy.html'))
+			return static.File(os.path.join(SOURCE_LOC + 'html', 'buy.html'))
 		elif name == 'info':
-			return static.File(os.path.join('html', 'info.html'))
+			return static.File(os.path.join(SOURCE_LOC + 'html', 'info.html'))
 	   	elif name == 'receipt' or name == 'receipt.html':
-			return static.File(os.path.join('html', 'receipt.html'))
+			return static.File(os.path.join(SOURCE_LOC + 'html', 'receipt.html'))
 		else:
 			return FormPage()
 
@@ -254,12 +256,12 @@ class FormPage(resource.Resource):
 			logging.debug("Adding new info")
 		if request.uri == '/login':
 				if self.login(request):
-						data = open(os.path.join('html', 'buy.html'), 'r')
+						data = open(os.path.join(SOURCE_LOC + 'html', 'buy.html'), 'r')
 						logging.debug("render_POST end with login.")
 						return data.read()
 				else:
 
-						data = open(os.path.join('html', 'login.html'), 'r')
+						data = open(os.path.join(SOURCE_LOC + 'html', 'login.html'), 'r')
 						logging.debug("render_POST end with failed login.")
 						return data.read()
 
@@ -273,7 +275,7 @@ class FormPage(resource.Resource):
 			password = request.args['password'][0]
 
 			config = ConfigParser.ConfigParser()
-			config.read('server.cfg')
+			config.read(CONFIG_LOC + 'server.cfg')
 			UUID_SALT = config.get('salt', 'uuid_salt')
 			salt = UUID_SALT
 			hashedPassword = hashlib.sha512(password + salt).hexdigest()
@@ -305,7 +307,7 @@ class FormPage(resource.Resource):
 			return False
 
 FORMAT = "%(asctime)-15s %(levelname)s - %(message)s"
-logging.basicConfig(level=logging.DEBUG, filename='dinoWebApp.log', format=FORMAT)
+logging.basicConfig(level=logging.DEBUG, filename=(CONFIG_LOC + 'dinoWebApp.log'), format=FORMAT)
 logging.info('Server starting...')
 factory = Site(FormPage())
 reactor.listenTCP(8080, factory)
