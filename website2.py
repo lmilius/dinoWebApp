@@ -207,6 +207,7 @@ class FormPage(resource.Resource):
 			logging.debug("I am returning purchases")
 			logging.debug("FormPage Request Arguments: %s", str(request.args))
 			logging.debug("RequestURI: %s", str(request.uri))
+			logging.debug("RequestPath: %s", str(request.path))
 
 			last_purchase = Get_last_Purchase();
 			proof = GetPurchaseproof(last_purchase)
