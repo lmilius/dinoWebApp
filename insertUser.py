@@ -7,7 +7,7 @@ import hashlib, uuid
 
 CONFIG_LOC = '/home/twisted/'
 #CONFIG_LOC = './'
-SQLINJECTION = re.compile(r'([^a-zA-Z0-9.])')
+SQLINJECTION = re.compile(r'([^a-zA-Z0-9_.])')
 FORMAT = "%(asctime)-15s %(levelname)s - %(message)s"
 logging.basicConfig(filename=CONFIG_LOC + 'insertUser.log', level=logging.DEBUG, format=FORMAT)
 

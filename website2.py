@@ -15,7 +15,7 @@ import hashlib, uuid
 import re
 import ConfigParser
 
-SQLINJECTION = re.compile(r'([^a-zA-Z0-9.])')
+SQLINJECTION = re.compile(r'([^a-zA-Z0-9_.])')
 CONFIG_LOC = '/home/twisted/'
 SOURCE_LOC = '/var/www/dinoWebApp/'
 #CONFIG_LOC = './'
