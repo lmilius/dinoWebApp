@@ -44,7 +44,7 @@ def deleteUser(username):
 		logging.debug('SQL Injection found!')
 		return False
 	con, cur = connectDB()
-	query = "DELETE FROM USER WHERE username='%s';" % (username)
+	query = ("DELETE FROM USER WHERE username='%s';", (username))
 	logging.debug(query)
 	exe = cur.execute(query)
 	if exe >= 1:

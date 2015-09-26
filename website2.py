@@ -164,17 +164,17 @@ def updateTXID(txid):
 
 def getOrderCompletion(orderID):
 	logging.debug("Getting order completion details from DB.")
-	logging.debug("orderID: %s" % orderID)
+	logging.debug("orderID: %s", orderID)
 	try:
 		con, cur = connectDB()
-		query = "SELECT * FROM orders WHERE orderID='%s';" % orderID
+		query = ("SELECT * FROM orders WHERE orderID='%s';", orderID)
 		cur.execute(query)
 		check = cur.fetchall()
 		closeDB(con)
 	except:
 		logging.debug("getOrderCompletion failed.")
 	if check:
-		logging.debug("check: %s" % check)
+		logging.debug("check: %s", check)
 		return check
 
 def updateViewed(orderID):
@@ -182,7 +182,7 @@ def updateViewed(orderID):
 	logging.debug("OrderID: %s", orderID)
 	try:
 		con, cur = connectDB()
-		query = "UPDATE orders SET viewed=1 WHERE orderID='%s';" % orderID
+		query = ("UPDATE orders SET viewed=1 WHERE orderID='%s';", orderID)
 		cur.execute(query)
 		check = cur.fetchall()
 		closeDB(con)
@@ -302,6 +302,8 @@ class FormPage(resource.Resource):
 		if request.getHeader('request') == 'Newinfo':
  			addInfo(request.content.read());
 			logging.debug("Adding new info")
+		if request.getHeader('request') == 'price':
+			logging.debug("Getting price...")
 		if request.uri == '/login':
 				if self.login(request):
 						data = open(os.path.join(SOURCE_LOC + 'html', 'buy.html'), 'r')
@@ -328,7 +330,7 @@ class FormPage(resource.Resource):
 			salt = UUID_SALT
 			hashedPassword = hashlib.sha512((password.encode('UTF-8')) + salt).hexdigest()
 			con, cur = connectDB()
-			query = "SELECT * FROM Website.USER WHERE username='%s'" % username
+			query = ("SELECT * FROM Website.USER WHERE username='%s'", username)
 			logging.debug("query: %s", str(query))
 			exe = cur.execute(query)
 			logging.debug("execute return: %s", str(exe))
