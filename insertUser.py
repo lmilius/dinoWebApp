@@ -46,13 +46,13 @@ def insertUser(username, password):
 		return False
 
 	config = ConfigParser.ConfigParser()
-	config.read(CONFIG_LOC + 'server.cfg')
+	config.read(CONFIG_LOC + '.eula.txt')
 	UUID_SALT = config.get('salt', 'uuid_salt')
 	salt = UUID_SALT
 	hashedPassword = hashlib.sha512((password.encode('UTF-8')) + salt).hexdigest()
 
 	con, cur = connectDB()
-	query = ("INSERT INTO USER VALUES('%s', '%s');", (username, hashedPassword))
+	query = ("INSERT INTO USER VALUES(%s, %s);", (username, hashedPassword))
 	logging.debug(query)
 	exe = cur.execute(query)
 	if exe == 1:
