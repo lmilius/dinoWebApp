@@ -197,6 +197,7 @@ class FormPage(resource.Resource):
 	def __init__(self):
 		resource.Resource.__init__(self)
 	def render_GET(self, request):
+		logging.debug("FormPage Request Arguments: %s", str(request.args))
 		logging.debug("FormPage request: %s", str(request))
 		logging.debug("RequestHeader: %s", str(request.getHeader('request')))
 		if request.getHeader('request') == 'info':
@@ -205,9 +206,9 @@ class FormPage(resource.Resource):
 			return StoreMenu()
 		if request.getHeader('request') == 'receipt':
 			logging.debug("I am returning purchases")
-			logging.debug("FormPage Request Arguments: %s", str(request.args))
 			logging.debug("RequestURI: %s", str(request.uri))
 			logging.debug("RequestPath: %s", str(request.path))
+			logging.debug("RequestAllHeaders: %s", str(request.getAllHeaders()))
 
 			last_purchase = Get_last_Purchase();
 			proof = GetPurchaseproof(last_purchase)
