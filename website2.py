@@ -234,7 +234,7 @@ class FormPage(resource.Resource):
 					updateViewed(orderID)
 					return json.dumps(last_purchase)
 
-			last_purchase[0][0] = 0
+			last_purchase[0] = 0
 			logging.debug("FormPage last_purchase (after): %s", str(last_purchase))
 
 			# last_purchase.append(proof)
