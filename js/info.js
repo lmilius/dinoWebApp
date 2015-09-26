@@ -23,21 +23,3 @@ for (var i in json) {
 
 }
 });
-function addNewInfo(){
-alert('test');
-var str='<form id="NewInfo">Headers: <input type="text" name="headers"><br> Text:<input type="text" name="info"></form>';
-str+="<button onclick='sumbitInfo()'>Submit</button>";
-document.getElementById("div2").innerHTML=str
-
-}
-function sumbitInfo(){
-var json={'Headers':document.getElementById("NewInfo").elements['headers'].value,'Text':document.getElementById("NewInfo").elements['info'].value};
-$.ajax({
-url:'/',
-method:'POST',
-type:'json',
-headers:{'request':'Newinfo'},
-data:json
-
-});
-}

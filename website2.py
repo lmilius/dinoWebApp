@@ -138,7 +138,7 @@ def ProcessPurchase(data):
 
 def StoreMenu():
 	con, cur = connectDB()
-	query = ("SELECT Text, Price, Img, Quanity FROM Products")
+	query = ("SELECT * FROM Products")
 	cur.execute(query)
 	infoJson = 	cur.fetchall()
 	closeDB(con)
@@ -148,7 +148,7 @@ def updateTXID(txid):
 	logging.debug("updateTXID parameter: %s", str(txid))
 	try:
 	 	con, cur = connectDB()
-		query = ("SELECT Text, Price, Img, Quanity FROM Products WHERE txid=%s")
+		query = ("SELECT * FROM Products WHERE txid=%s")
 		cur.execute(query, int(txid))
 		check1 = cur.fetchall()
 		closeDB(con)
