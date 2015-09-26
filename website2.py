@@ -137,14 +137,18 @@ def ProcessPurchase(data):
 	logging.debug("ProcessPurchase processing complete.")
 
 def StoreMenu():
-	con, cur = connectDB()
-	query = ("SELECT Text, Price, Img, Quanity, txid FROM Products")
-	cur.execute(query)
-	logging.debug('After query in StoreMenu')
-	infoJson = 	cur.fetchall()
-	#for item in infoJson:
-	#	logging.debug('item: %s', arr(item)[5])
-	logging.debug("infoJson: %s", infoJson)
+	try:
+		con, cur = connectDB()
+		query = ("SELECT Text, Price, Img, Quanity, txid FROM Products")
+		cur.execute(query)
+		logging.debug('After query in StoreMenu')
+		infoJson = 	cur.fetchall()
+		#for item in infoJson:
+		#	logging.debug('item: %s', arr(item)[5])
+		logging.debug("infoJson: %s", infoJson)
+	except Exception as error:
+		logging.warn('Error:' + str(error))
+		logging.warn('Error parameters: ' + str(error.args))
 
 	closeDB(con)
 	return json.dumps(infoJson)
