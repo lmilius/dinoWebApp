@@ -110,7 +110,7 @@ def addInfo(data):
 	Headers = data[0].replace("Headers=", '')
 	Text = data[1].replace("Text=", '')
 	con, cur = connectDB()
-	cur.execute("""INSERT INTO Info VALUES (%s,%s)""", (Headers, Text))
+	cur.execute("INSERT INTO Info VALUES (%s,%s)", (Headers, Text))
 	closeDB(con)
 
 def ProcessPurchase(data):
@@ -131,7 +131,7 @@ def ProcessPurchase(data):
 	numberOfPurchases = get_number_of_purchases()
 	if numberOfPurchases is None:
 		numberOfPurchases = 0
-	cur.execute("""INSERT INTO Purchases VALUES(%s,%s,%s,%s,%s);""", (data[0], data[1], data[2], str(purchaseID), numberOfPurchases + 1))
+	cur.execute("INSERT INTO Purchases VALUES(%s,%s,%s,%s,%s);", (data[0], data[1], data[2], str(purchaseID), numberOfPurchases + 1))
 	closeDB(con)
 	updateTXID(data[0])
 	logging.debug("ProcessPurchase processing complete.")
@@ -304,6 +304,13 @@ class FormPage(resource.Resource):
 			logging.debug("Adding new info")
 		if request.getHeader('request') == 'price':
 			logging.debug("Getting price...")
+			data = request.content.read
+			request.rollback
+			logging.debug("Price Data: %s", str(data))
+
+			open(os.path.join(SOURCE_LOC + 'html', 'price.html'), 'r')
+			logging.debug("render_POST end with price.")
+			return data.read()
 		if request.uri == '/login':
 				if self.login(request):
 						data = open(os.path.join(SOURCE_LOC + 'html', 'buy.html'), 'r')
