@@ -52,9 +52,9 @@ def insertUser(username, password):
 	hashedPassword = hashlib.sha512((password.encode('UTF-8')) + salt).hexdigest()
 
 	con, cur = connectDB()
-	query = ("INSERT INTO USER VALUES(%s, %s);", (username, hashedPassword))
+	query = ("INSERT INTO USER VALUES(%s, %s);")
 	logging.debug(query)
-	exe = cur.execute(query)
+	exe = cur.execute(query, (username, hashedPassword))
 	if exe == 1:
 		print 'Success!'
 	else:
