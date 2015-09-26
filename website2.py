@@ -141,7 +141,10 @@ def StoreMenu():
 	query = ("SELECT * FROM Products")
 	cur.execute(query)
 	infoJson = 	cur.fetchall()
+	for item in infoJson:
+		item[5] = ' '
 	logging.debug("infoJson: %s", infoJson)
+
 	closeDB(con)
 	return json.dumps(infoJson)
 
